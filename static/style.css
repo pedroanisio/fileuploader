@@ -22,3 +22,16 @@ h1, h2 {
 .table {
     margin-top: 20px;
 }
+
+.drag-drop-area {
+    border: 2px dashed #007bff;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    color: #007bff;
+    cursor: pointer;
+}
+
+.drag-drop-area.drag-over {
+    background-color: #e9ecef;
+}

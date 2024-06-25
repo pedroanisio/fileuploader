@@ -20,12 +20,17 @@
             </div>
           {% endif %}
         {% endwith %}
-        <form method="post" enctype="multipart/form-data" class="mb-4">
-            <div class="form-group">
-                <input type="file" name="file" class="form-control-file">
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+        <div class="mb-4">
+            <form id="upload-form" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="file" id="file-input" class="form-control-file d-none">
+                </div>
+                <div id="drag-drop-area" class="drag-drop-area">
+                    Drag & Drop files here or click to select files
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Upload</button>
+            </form>
+        </div>
         <h2>Files available for download:</h2>
         <table class="table table-striped">
             <thead>
@@ -51,5 +56,32 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const dragDropArea = document.getElementById('drag-drop-area');
+        const uploadForm = document.getElementById('upload-form');
+
+        dragDropArea.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            uploadForm.submit();
+        });
+
+        dragDropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dragDropArea.classList.add('drag-over');
+        });
+
+        dragDropArea.addEventListener('dragleave', () => {
+            dragDropArea.classList.remove('drag-over');
+        });
+
+        dragDropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dragDropArea.classList.remove('drag-over');
+            fileInput.files = event.dataTransfer.files;
+            uploadForm.submit();
+        });
+    </script>
 </body>
 </html>
