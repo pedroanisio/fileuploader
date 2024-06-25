@@ -52,6 +52,41 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="clipboard-area">
+            <h2>Clipboard</h2>
+            <form id="clipboard-form" method="post">
+                <div class="form-group">
+                    <textarea id="clipboard-text" class="form-control" rows="3" placeholder="Paste text here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Clipboard</button>
+            </form>
+            <div id="clipboard-cards">
+                {% for file in clipboard_files %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ file.name }}</h5>
+                        <div class="btn-group">
+                            {% if file.name.endswith('.txt') %}
+                            <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
+                                View Content
+                            </button>
+                            <div class="collapse" id="collapse{{ loop.index }}">
+                                <div class="card card-body mt-2">
+                                    <pre>{{ file.content }}</pre>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <a href="{{ url_for('clipboard_file', filename=file.name) }}" class="btn btn-info btn-sm">Download</a>
+                            <button class="btn btn-secondary btn-sm copy-btn" data-text="{{ file.content }}">Copy</button>
+                        </div>
+                        {% if not file.name.endswith('.txt') %}
+                        <img src="{{ url_for('clipboard_file', filename=file.name) }}" class="card-img-top">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -60,6 +95,8 @@
         const fileInput = document.getElementById('file-input');
         const dragDropArea = document.getElementById('drag-drop-area');
         const uploadForm = document.getElementById('upload-form');
+        const clipboardForm = document.getElementById('clipboard-form');
+        const clipboardText = document.getElementById('clipboard-text');
 
         dragDropArea.addEventListener('click', () => fileInput.click());
 
@@ -81,6 +118,31 @@
             dragDropArea.classList.remove('drag-over');
             fileInput.files = event.dataTransfer.files;
             uploadForm.submit();
+        });
+
+        clipboardForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('clipboard_data', clipboardText.value);
+            const response = await fetch('/clipboard', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        });
+
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const text = event.target.getAttribute('data-text');
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Text copied to clipboard');
+                });
+            });
         });
     </script>
 </body>
