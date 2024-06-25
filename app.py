@@ -36,10 +36,15 @@ def get_file_properties(filename, folder):
     file_path = os.path.join(folder, filename)
     file_size = os.path.getsize(file_path)
     file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+    content = ''
+    if filename.endswith('.txt'):
+        with open(file_path, 'r') as f:
+            content = f.read()
     return {
         'name': filename,
         'size': file_size,
-        'creation_time': file_creation_time
+        'creation_time': file_creation_time,
+        'content': content
     }
 
 @app.route('/', methods=['GET', 'POST'])

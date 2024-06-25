@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    command: gunicorn -w 4 -b 0.0.0.0:3010 app:app
+    volumes:
+      - .:/app
+    ports:
+      - "3010:3010"
+    environment:
+      - FLASK_ENV=production
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

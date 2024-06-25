@@ -1,3 +1,4 @@
+# file_path: generate_secret.sh
 #!/bin/bash
 
 # Check if .env file exists, create if it doesn't
